@@ -2,6 +2,8 @@
 
 require('babel-core/register')({
   presets: ['es2015', 'stage-3'],
+  ignore: false,
+  only: /ss-cluster\/src/
 })
 require('babel-polyfill')
 
