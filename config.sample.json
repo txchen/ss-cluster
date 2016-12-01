@@ -1,0 +1,24 @@
+{
+  "default" : {
+    "serverAddr": "1.2.3.4",
+    "serverPort": 8083,
+    "localAddr": "127.0.0.1",
+    "timeout": 600,
+    "method": "rc4-md5",
+    "password": "mypassword"
+  },
+  "servers": [
+    {
+      "serverPort": 8089,
+      "localPort": 1013
+    },
+    {
+      "serverPort": 8090,
+      "localPort": 1014
+    },
+    {
+      "method": "table",
+      "localPort": 1015
+    }
+  ]
+}
