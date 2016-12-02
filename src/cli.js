@@ -1,5 +1,6 @@
 import commander from 'commander'
 import fs from 'fs'
+import cluster from './cluster'
 
 commander
   .option('-c, --config [configFile]', 'server config file')
@@ -73,12 +74,12 @@ export default function cli () {
     validateConfig(commander.config, (err, servers) => {
       if (err) {
         console.log('Failed to start ss-cluster, errors:')
-        err.forEach(e => console.log('  ' + e))
+        err.forEach(e => console.log('  * ' + e))
         process.exit(2)
       }
       // start the ss-local instances
       console.log(`Trying to start ${servers.length} ss-local instances`)
-      console.log(servers)
+      cluster.start(servers)
     })
   }
 }

@@ -1,10 +1,7 @@
 import ip from 'ip'
 import { createServer as _createServer, connect } from 'net'
 import { getDstInfo, writeOrPause, getDstStr, closeSilently } from './utils'
-import logger from './logger'
 import { createCipher, createDecipher } from './encryptor'
-
-const NAME = 'ss_local'
 
 function handleMethod (connection, data) {
   // +----+----------+----------+
@@ -35,7 +32,7 @@ function handleMethod (connection, data) {
   return method === 0 ? 1 : 3 // cannot be 3
 }
 
-function handleRequest (
+SSLocal.prototype.handleRequest = function (
   connection, data,
   { serverAddr, serverPort, password, method, localAddr, localPort },
   dstInfo, onConnect, onDestroy, isClientConnected
@@ -55,7 +52,7 @@ function handleRequest (
   let cipheredData = null
 
   if (cmd !== 0x01 && !isUDPRelay) {
-    logger.warn(`unsupported cmd: ${cmd}`)
+    this.logger.warn(`unsupported cmd: ${cmd}`)
     return {
       stage: -1,
     }
@@ -85,7 +82,7 @@ function handleRequest (
     }
   }
 
-  logger.verbose(`connecting: ${dstInfo.dstAddr.toString('utf8')}`
+  this.logger.verbose(`connecting: ${dstInfo.dstAddr.toString('utf8')}`
     + `:${dstInfo.dstPort.readUInt16BE()}`)
 
   repBuf = new Buffer(10)
@@ -107,7 +104,7 @@ function handleRequest (
     if (!decipher) {
       tmp = createDecipher(password, method, remoteData)
       if (!tmp) {
-        logger.warn(`${NAME} get invalid msg`)
+        this.logger.warn(`get invalid msg`)
         onDestroy()
         return
       }
@@ -133,7 +130,7 @@ function handleRequest (
   })
 
   clientToRemote.on('error', (e) => {
-    logger.warn('ssLocal error happened in clientToRemote when'
+    this.logger.warn('ssLocal error happened in clientToRemote when'
       + ` connecting to ${getDstStr(dstInfo)}: ${e.message}`)
 
     onDestroy()
@@ -159,7 +156,7 @@ function handleRequest (
   }
 }
 
-function handleConnection (config, connection) {
+SSLocal.prototype.handleConnection = function (config, connection) {
   let stage = 0
   let clientToRemote
   let tmp
@@ -179,12 +176,12 @@ function handleConnection (config, connection) {
         dstInfo = getDstInfo(data)
 
         if (!dstInfo) {
-          logger.warn(`Failed to get 'dstInfo' from parsing data: ${data}`)
+          this.logger.warn(`Failed to get 'dstInfo' from parsing data: ${data}`)
           connection.destroy()
           return
         }
 
-        tmp = handleRequest(
+        tmp = this.handleRequest(
           connection, data, config, dstInfo,
           () => { // after connected
             remoteConnected = true
@@ -260,7 +257,7 @@ function handleConnection (config, connection) {
   })
 
   connection.on('error', (e) => {
-    logger.warn(`${NAME} error happened in client connection: ${e.message}`)
+    this.logger.warn(`error happened in client connection: ${e.message}`)
   })
 
   timer = setTimeout(() => {
@@ -274,31 +271,32 @@ function handleConnection (config, connection) {
   }, config.timeout * 1000)
 }
 
-function closeAll() {
+SSLocal.prototype.closeAll = function () {
   closeSilently(this.server)
 }
 
-function createServer(config) {
-  const server = _createServer(handleConnection.bind(null, config))
+SSLocal.prototype.startServer = function () {
+  this.server = _createServer(this.handleConnection.bind(null, this.config))
 
-  server.on('close', () => {
-    logger.warn(`${NAME} server closed`)
+  this.server.on('close', () => {
+    this.logger.warn(`server closed`)
   })
 
-  server.on('error', (e) => {
-    logger.error(`${NAME} server error: ${e.message}`)
+  this.server.on('error', (e) => {
+    this.logger.error(`server error: ${e.message}`)
   })
 
-  server.listen(config.localPort)
+  this.server.listen(this.config.localPort)
 
-  logger.verbose(`${NAME} is listening on ${config.localAddr}:${config.localPort}`)
+  this.logger.verbose(`is listening on ${this.config.localAddr}:${this.config.localPort}`)
 
   return {
-    server,
-    closeAll,
+    server: this.server,
+    closeAll: this.closeAll,
   }
 }
 
-export function startServer(config) {
-  return createServer(Object.assign({}, config))
+export function SSLocal (config, logger) {
+  this.config = Object.assign({}, config)
+  this.logger = logger
 }

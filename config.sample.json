@@ -10,15 +10,15 @@
   "servers": [
     {
       "serverPort": 8089,
-      "localPort": 1013
+      "localPort": 10013
     },
     {
       "serverPort": 8090,
-      "localPort": 1014
+      "localPort": 10014
     },
     {
       "method": "table",
-      "localPort": 1015
+      "localPort": 10015
     }
   ]
 }
