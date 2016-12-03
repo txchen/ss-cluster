@@ -82,7 +82,7 @@ SSLocal.prototype.handleRequest = function (
     }
   }
 
-  this.logger.verbose(`connecting: ${dstInfo.dstAddr.toString('utf8')}`
+  this.logger.verbose(`connecting: ${ip.toString(dstInfo.dstAddr)}`
     + `:${dstInfo.dstPort.readUInt16BE()}`)
 
   repBuf = new Buffer(10)
@@ -276,7 +276,7 @@ SSLocal.prototype.closeAll = function () {
 }
 
 SSLocal.prototype.startServer = function () {
-  this.server = _createServer(this.handleConnection.bind(null, this.config))
+  this.server = _createServer(this.handleConnection.bind(this, this.config))
 
   this.server.on('close', () => {
     this.logger.warn(`server closed`)

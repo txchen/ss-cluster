@@ -28,6 +28,19 @@ function getMD5Hash (data) {
   return crypto.createHash('md5').update(data).digest()
 }
 
+function create_rc4_md5_cipher (key, iv, op) {
+  var md5, rc4_key
+  md5 = crypto.createHash('md5')
+  md5.update(key)
+  md5.update(iv)
+  rc4_key = md5.digest()
+  if (op === 1) {
+    return crypto.createCipheriv('rc4', rc4_key, '')
+  } else {
+    return crypto.createDecipheriv('rc4', rc4_key, '')
+  }
+}
+
 export function generateKey (methodName, secret) {
   const secretBuf = new Buffer(secret, 'utf8')
   const tokens = []
@@ -63,7 +76,12 @@ export function generateKey (methodName, secret) {
 export function createCipher (secret, methodName, initialData, _iv) {
   const key = generateKey(methodName, secret)
   const iv = _iv || crypto.randomBytes(getParamLength(methodName)[1])
-  const cipher = crypto.createCipheriv(methodName, key, iv)
+  let cipher = null
+  if (methodName === 'rc4-md5') {
+    cipher = create_rc4_md5_cipher(key, iv, 1);
+  } else {
+    cipher = crypto.createCipheriv(methodName, key, iv)
+  }
 
   return {
     cipher,
@@ -80,7 +98,12 @@ export function createDecipher (secret, methodName, initialData) {
   }
 
   const key = generateKey(methodName, secret)
-  const decipher = crypto.createDecipheriv(methodName, key, iv)
+  let decipher = null
+  if (methodName === 'rc4-md5') {
+    decipher = create_rc4_md5_cipher(key, iv, 0);
+  } else {
+    decipher = crypto.createDecipheriv(methodName, key, iv)
+  }
   const data = decipher.update(initialData.slice(ivLength))
 
   return {
