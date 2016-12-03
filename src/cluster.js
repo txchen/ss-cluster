@@ -1,4 +1,4 @@
-import Logger from './logger'
+import { Logger } from './logger'
 import { SSLocal } from './ssLocal'
 
 // TODO: expose a web endpoint to view the status of the connections

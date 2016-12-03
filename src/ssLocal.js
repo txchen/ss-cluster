@@ -288,7 +288,7 @@ SSLocal.prototype.startServer = function () {
 
   this.server.listen(this.config.localPort)
 
-  this.logger.verbose(`is listening on ${this.config.localAddr}:${this.config.localPort}`)
+  this.logger.info(`listening on ${this.config.localAddr}:${this.config.localPort}`)
 
   return {
     server: this.server,

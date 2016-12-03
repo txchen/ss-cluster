@@ -1,6 +1,18 @@
-export default class Logger {
+export const LogLevel = {
+  VERBOSE: 0,
+  INFO: 1,
+  WARNING: 2,
+  ERROR: 2,
+}
+
+export class Logger {
   constructor(name) {
     this.name = name
+    this.logLevel = LogLevel.INFO
+  }
+
+  setLogLevel(logLevel) {
+    this.logLevel = logLevel
   }
 
   error (msg) {
@@ -8,14 +20,20 @@ export default class Logger {
   }
 
   info (msg) {
-    console.log(`[${this.name}] INF - ${msg}`)
+    if (this.logLevel <= LogLevel.INFO) {
+      console.log(`[${this.name}] INF - ${msg}`)
+    }
   }
 
   warning (msg) {
-    console.log(`[${this.name}] WAR - ${msg}`)
+    if (this.logLevel <= LogLevel.WARNING) {
+      console.log(`[${this.name}] WAR - ${msg}`)
+    }
   }
 
   verbose (msg) {
-    console.log(`[${this.name}] VER - ${msg}`)
+    if (this.logLevel <= LogLevel.VERBOSE) {
+      console.log(`[${this.name}] VER - ${msg}`)
+    }
   }
 }
