@@ -3,13 +3,16 @@ import { SSLocal } from './ssLocal'
 
 // TODO: expose a web endpoint to view the status of the connections
 
+const ssLocalInstances = []
+
 export default {
   start (servers) {
-    console.log(servers)
-    // create n * ssLocal instance
-    let logger = new Logger('name1')
-    let config = servers[0]
-    let ssLocal = new SSLocal(config, logger)
-    ssLocal.startServer()
+    for (let i = 0; i < servers.length; i++) {
+      let logger = new Logger('ssLocal_' + i)
+      let config = servers[i]
+      let ssLocal = new SSLocal(config, logger)
+      ssLocal.startServer()
+      ssLocalInstances.push(ssLocal)
+    }
   }
 }
