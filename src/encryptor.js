@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+import TableCipher from './tableCipher'
 
 // directly exported from shadowsocks-nodejs
 const cryptoParamLength = {
@@ -74,6 +75,13 @@ export function generateKey (methodName, secret) {
 }
 
 export function createCipher (secret, methodName, initialData, _iv) {
+  if (methodName === 'table') {
+    let tableCipher = new TableCipher(secret, true)
+    return {
+      cipher: tableCipher,
+      data: tableCipher.update(initialData)
+    }
+  }
   const key = generateKey(methodName, secret)
   const iv = _iv || crypto.randomBytes(getParamLength(methodName)[1])
   let cipher = null
@@ -90,6 +98,13 @@ export function createCipher (secret, methodName, initialData, _iv) {
 }
 
 export function createDecipher (secret, methodName, initialData) {
+  if (methodName === 'table') {
+    let tableDecipher = new TableCipher(secret, false)
+    return {
+      cipher: tableDecipher,
+      data: tableDecipher.update(initialData)
+    }
+  }
   const ivLength = getParamLength(methodName)[1]
   const iv = initialData.slice(0, ivLength)
 
@@ -112,7 +127,6 @@ export function createDecipher (secret, methodName, initialData) {
   }
 }
 
-// TODO: support method=table
 export function encrypt (secret, methodName, data, _iv) {
   return createCipher(secret, methodName, data, _iv).data
 }

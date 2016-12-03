@@ -25,7 +25,7 @@ export class Logger {
     }
   }
 
-  warning (msg) {
+  warn (msg) {
     if (this.logLevel <= LogLevel.WARNING) {
       console.log(`[${this.name}] WAR - ${msg}`)
     }
