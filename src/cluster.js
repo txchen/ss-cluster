@@ -5,6 +5,21 @@ import Koa from 'koa'
 const app = new Koa()
 const ssLocalInstances = []
 
+function formatSizeUnits(bytes)
+{
+  if ( ( bytes >> 30 ) & 0x3FF )
+    bytes = ( bytes >>> 30 ) + '.' + ( bytes & (3*0x3FF )) + 'GB'
+  else if ( ( bytes >> 20 ) & 0x3FF )
+    bytes = ( bytes >>> 20 ) + '.' + ( bytes & (2*0x3FF ) ) + 'MB'
+  else if ( ( bytes >> 10 ) & 0x3FF )
+    bytes = ( bytes >>> 10 ) + '.' + ( bytes & (0x3FF ) ) + 'KB'
+  else if ( ( bytes >> 1 ) & 0x3FF )
+    bytes = ( bytes >>> 1 ) + 'B'
+  else
+    bytes = bytes + 'B'
+  return bytes
+}
+
 app.use(async ctx => {
   let rows = ''
   ssLocalInstances.forEach(ssLocal => {
@@ -13,6 +28,8 @@ app.use(async ctx => {
   <td>${cfg.serverAddr + ':' + cfg.serverPort}</td>
   <td>${cfg.localAddr + ':' + cfg.localPort}</td>
   <td>${cfg.method}</td>
+  <td>${formatSizeUnits(ssLocal.tx)}</td>
+  <td>${formatSizeUnits(ssLocal.rx)}</td>
   <td></td>
   <td></td>
 </tr>`
@@ -29,6 +46,8 @@ app.use(async ctx => {
         <th>ServerAddr</th>
         <th>LocalAddr</th>
         <th>Method</th>
+        <th>TX</th>
+        <th>RX</th>
         <th>IP</th>
         <th>Status</th>
       </tr>

@@ -116,6 +116,7 @@ SSLocal.prototype.handleRequest = function (
 
     if (isClientConnected()) {
       writeOrPause(clientToRemote, connection, decipheredData)
+      this.rx += decipheredData.length
     } else {
       clientToRemote.destroy()
     }
@@ -146,8 +147,10 @@ SSLocal.prototype.handleRequest = function (
 
   // write
   connection.write(repBuf)
+  this.tx += repBuf.length
 
   writeOrPause(connection, clientToRemote, cipheredData)
+  this.tx += cipheredData.length
 
   return {
     stage: 2,
@@ -299,4 +302,6 @@ SSLocal.prototype.startServer = function () {
 export function SSLocal (config, logger) {
   this.config = Object.assign({}, config)
   this.logger = logger
+  this.tx = 0
+  this.rx = 0
 }
