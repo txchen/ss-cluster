@@ -80,6 +80,7 @@ export default function cli () {
       // start the ss-local instances
       console.log(`Trying to start ${servers.length} ss-local instances`)
       cluster.start(servers)
+      cluster.startWeb(64444)
     })
   }
 }
