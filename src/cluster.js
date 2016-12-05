@@ -1,6 +1,7 @@
 import { Logger } from './logger'
 import { SSLocal } from './ssLocal'
 import Koa from 'koa'
+import http from 'http'
 
 const app = new Koa()
 const ssLocalInstances = []
@@ -30,8 +31,8 @@ app.use(async ctx => {
   <td>${cfg.method}</td>
   <td>${formatSizeUnits(ssLocal.tx)}</td>
   <td>${formatSizeUnits(ssLocal.rx)}</td>
-  <td></td>
-  <td></td>
+  <td>${ssLocal.IP}</td>
+  <td>${ssLocal.lastStatus}</td>
 </tr>`
   })
   ctx.body = `
