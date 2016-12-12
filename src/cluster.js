@@ -63,7 +63,7 @@ app.use(async ctx => {
 export default {
   start (servers) {
     for (let i = 0; i < servers.length; i++) {
-      let logger = new Logger('ssLocal_' + i)
+      let logger = new Logger('ssLocal_' + (i + 1))
       let config = servers[i]
       let ssLocal = new SSLocal(config, logger)
       ssLocal.startServer()

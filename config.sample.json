@@ -1,4 +1,5 @@
 {
+  "statusPort": 64444,
   "default" : {
     "serverAddr": "1.2.3.4",
     "serverPort": 8083,

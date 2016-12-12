@@ -298,7 +298,7 @@ SSLocal.prototype.startServer = function () {
   this.logger.info(`listening on ${this.config.localAddr}:${this.config.localPort}`)
 
   this.checkHealth()
-  setInterval(() => { this.checkHealth() }, 30 * 1000)
+  setInterval(() => { this.checkHealth() }, 60 * 1000)
 
   return {
     server: this.server,
@@ -307,7 +307,7 @@ SSLocal.prototype.startServer = function () {
 }
 
 SSLocal.prototype.checkHealth = function () {
-  request.get('http://ipinfo.io/')
+  request.get('http://ifconfig.co/json')
     .proxy('socks://127.0.0.1:' + this.config.localPort)
     .set('Accept', 'application/json')
     .end((err, res) => {
