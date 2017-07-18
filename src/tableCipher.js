@@ -1,4 +1,4 @@
-import crypto from 'crypto'
+const crypto = require('crypto')
 
 const cachedTables = {}
 
@@ -76,7 +76,7 @@ function getTable (key) {
   return result
 }
 
-export default class TableCipher {
+module.exports = class TableCipher {
   constructor (key, isEncrypt) {
     this.tables = getTable(key)
     this.actualTable = isEncrypt ? this.tables[0] : this.tables[1]

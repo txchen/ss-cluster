@@ -1,5 +1,5 @@
-import crypto from 'crypto'
-import TableCipher from './tableCipher'
+const crypto = require('crypto')
+const TableCipher = require('./tableCipher')
 
 // directly exported from shadowsocks-nodejs
 const cryptoParamLength = {
@@ -21,7 +21,7 @@ const cryptoParamLength = {
 
 const keyCache = {}
 
-export function getParamLength(methodName) {
+module.exports.getParamLength = function (methodName) {
   return cryptoParamLength[methodName]
 }
 
@@ -42,7 +42,7 @@ function create_rc4_md5_cipher (key, iv, op) {
   }
 }
 
-export function generateKey (methodName, secret) {
+module.exports.generateKey = function (methodName, secret) {
   const secretBuf = new Buffer(secret, 'utf8')
   const tokens = []
   const keyLength = getParamLength(methodName)[0]
@@ -74,7 +74,7 @@ export function generateKey (methodName, secret) {
   return hash
 }
 
-export function createCipher (secret, methodName, initialData, _iv) {
+module.exports.createCipher = function (secret, methodName, initialData, _iv) {
   if (methodName === 'table') {
     let tableCipher = new TableCipher(secret, true)
     return {
@@ -97,7 +97,7 @@ export function createCipher (secret, methodName, initialData, _iv) {
   }
 }
 
-export function createDecipher (secret, methodName, initialData) {
+module.exports.createDecipher = function  (secret, methodName, initialData) {
   if (methodName === 'table') {
     let tableDecipher = new TableCipher(secret, false)
     return {
@@ -127,10 +127,10 @@ export function createDecipher (secret, methodName, initialData) {
   }
 }
 
-export function encrypt (secret, methodName, data, _iv) {
+module.exports.encrypt = function (secret, methodName, data, _iv) {
   return createCipher(secret, methodName, data, _iv).data
 }
 
-export function decrypt (secret, methodName, data) {
+module.exports.decrypt = function (secret, methodName, data) {
   return createDecipher(secret, methodName, data).data
 }

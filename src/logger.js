@@ -1,11 +1,11 @@
-export const LogLevel = {
+const LogLevel = {
   VERBOSE: 0,
   INFO: 1,
   WARNING: 2,
   ERROR: 2,
 }
 
-export class Logger {
+class Logger {
   constructor(name) {
     this.name = name
     this.logLevel = LogLevel.INFO
@@ -36,4 +36,9 @@ export class Logger {
       console.log(`[${this.name}] VER - ${msg}`)
     }
   }
+}
+
+module.exports = {
+  LogLevel,
+  Logger
 }

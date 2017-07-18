@@ -1,6 +1,6 @@
-import ip from 'ip'
+const ip = require('ip')
 
-export const BufferFrom = (() => {
+module.exports.BufferFrom = (() => {
   try {
     Buffer.from('aa', 'hex')
   } catch (err) {
@@ -10,7 +10,7 @@ export const BufferFrom = (() => {
   return Buffer.from
 })()
 
-export function closeSilently(server) {
+module.exports.closeSilently = (server) => {
   if (server) {
     try {
       server.close()
@@ -20,11 +20,11 @@ export function closeSilently(server) {
   }
 }
 
-export function sendDgram(socket, data, ...args) {
+module.exports.sendDgram = function (socket, data, ...args) {
   socket.send(data, 0, data.length, ...args)
 }
 
-export function writeOrPause(fromCon, toCon, data) {
+module.exports.writeOrPause = function (fromCon, toCon, data) {
   const res = toCon.write(data)
 
   if (!res) {
@@ -79,7 +79,7 @@ function _getDstInfo(data, offset) {
   }
 }
 
-export function getDstInfo(data, isServer) {
+module.exports.getDstInfo = function (data, isServer) {
   // +----+-----+-------+------+----------+----------+
   // |VER | CMD |  RSV  | ATYP | DST.ADDR | DST.PORT |
   // +----+-----+-------+------+----------+----------+
@@ -91,7 +91,7 @@ export function getDstInfo(data, isServer) {
   return _getDstInfo(data, offset)
 }
 
-export function getDstInfoFromUDPMsg(data, isServer) {
+module.exports.getDstInfoFromUDPMsg = function (data, isServer) {
   // +----+------+------+----------+----------+----------+
   // |RSV | FRAG | ATYP | DST.ADDR | DST.PORT |   DATA   |
   // +----+------+------+----------+----------+----------+
@@ -112,7 +112,7 @@ const formatKeyValues = {
   server_addr_ipv6: 'serverAddrIPv6',
 }
 
-export function formatConfig(_config) {
+module.exports.formatConfig = function (_config) {
   const formattedConfig = Object.assign({}, _config)
 
   Object.keys(formatKeyValues).forEach((key) => {
@@ -125,7 +125,7 @@ export function formatConfig(_config) {
   return formattedConfig
 }
 
-export function getDstStr(dstInfo) {
+module.exports.getDstStr = function (dstInfo) {
   if (!dstInfo) {
     return null
   }

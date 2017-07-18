@@ -1,6 +1,6 @@
-import commander from 'commander'
-import fs from 'fs'
-import cluster from './cluster'
+const commander = require('commander')
+const fs = require('fs')
+const cluster = require('./cluster')
 
 commander
   .option('-c, --config [configFile]', 'server config file')
@@ -66,21 +66,23 @@ function validateConfig (configFile, callback) {
   })
 }
 
-export default function cli () {
-  if (!commander.config) {
-    commander.outputHelp()
-    process.exit(1)
-  } else {
-    validateConfig(commander.config, (err, servers) => {
-      if (err) {
-        console.log('Failed to start ss-cluster, errors:')
-        err.forEach(e => console.log('  * ' + e))
-        process.exit(2)
-      }
-      // start the ss-local instances
-      console.log(`Trying to start ${servers.length} ss-local instances`)
-      cluster.start(servers)
-      cluster.startWeb(commander.config.statusPort || 64444)
-    })
+module.exports = {
+  cli () {
+    if (!commander.config) {
+      commander.outputHelp()
+      process.exit(1)
+    } else {
+      validateConfig(commander.config, (err, servers) => {
+        if (err) {
+          console.log('Failed to start ss-cluster, errors:')
+          err.forEach(e => console.log('  * ' + e))
+          process.exit(2)
+        }
+        // start the ss-local instances
+        console.log(`Trying to start ${servers.length} ss-local instances`)
+        cluster.start(servers)
+        cluster.startWeb(commander.config.statusPort || 64444)
+      })
+    }
   }
 }

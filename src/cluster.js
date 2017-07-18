@@ -1,7 +1,7 @@
-import { Logger } from './logger'
-import { SSLocal } from './ssLocal'
-import Koa from 'koa'
-import http from 'http'
+const { Logger } = require('./logger')
+const { SSLocal } = require('./ssLocal')
+const Koa = require('koa')
+const http = require('http')
 
 const app = new Koa()
 const ssLocalInstances = []
@@ -22,6 +22,15 @@ function formatSizeUnits(bytes)
 }
 
 app.use(async ctx => {
+  ipCounts = {}
+  ssLocalInstances.forEach(ssLocal => {
+    if (ipCounts[ssLocal.IP]) {
+      ipCounts[ssLocal.IP]++
+    } else {
+      ipCounts[ssLocal.IP] = 1
+    }
+  })
+
   let rows = ''
   ssLocalInstances.forEach(ssLocal => {
     const cfg = ssLocal.config
@@ -31,7 +40,7 @@ app.use(async ctx => {
   <td>${cfg.method}</td>
   <td>${formatSizeUnits(ssLocal.tx)}</td>
   <td>${formatSizeUnits(ssLocal.rx)}</td>
-  <td>${ssLocal.IP}</td>
+  <td>${ssLocal.IP} ${ ipCounts[ssLocal.IP] > 1 ? '(' + ipCounts[ssLocal.IP] + ')' : '' }</td>
   <td>${ssLocal.lastStatus}</td>
 </tr>`
   })
@@ -60,7 +69,7 @@ app.use(async ctx => {
 `
 })
 
-export default {
+module.exports = {
   start (servers) {
     for (let i = 0; i < servers.length; i++) {
       let logger = new Logger('ssLocal_' + (i + 1))

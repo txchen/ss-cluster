@@ -1,9 +1,9 @@
-import ip from 'ip'
-import { createServer as _createServer, connect } from 'net'
-import { getDstInfo, writeOrPause, getDstStr, closeSilently } from './utils'
-import { createCipher, createDecipher } from './encryptor'
-import request from 'superagent'
-import SuperagentProxy from 'superagent-proxy'
+const ip = require('ip')
+const { createServer, connect } = require('net')
+const { getDstInfo, writeOrPause, getDstStr, closeSilently } = require('./utils')
+const { createCipher, createDecipher } = require('./encryptor')
+const request = require('superagent')
+const SuperagentProxy = require('superagent-proxy')
 
 SuperagentProxy(request)
 
@@ -283,7 +283,7 @@ SSLocal.prototype.closeAll = function () {
 }
 
 SSLocal.prototype.startServer = function () {
-  this.server = _createServer(this.handleConnection.bind(this, this.config))
+  this.server = createServer(this.handleConnection.bind(this, this.config))
 
   this.server.on('close', () => {
     this.logger.warn(`server closed`)
@@ -307,26 +307,29 @@ SSLocal.prototype.startServer = function () {
 }
 
 SSLocal.prototype.checkHealth = function () {
-  request.get('http://ifconfig.co/json')
+  request.get('http://whatismyip.akamai.com/')
     .proxy('socks://127.0.0.1:' + this.config.localPort)
-    .set('Accept', 'application/json')
     .end((err, res) => {
       if (err) {
         this.logger.error(`failed to detect connectivity: ${err}`)
         this.lastStatus = 'Error'
       } else {
-        this.logger.verbose(`connectivity is cool! -- ${res.body}`)
+        this.logger.verbose(`connectivity is cool! -- ${res.text}`)
         this.lastStatus = 'OK'
-        this.IP = res.body.ip
+        this.IP = res.text
       }
     })
 }
 
-export function SSLocal (config, logger) {
+function SSLocal (config, logger) {
   this.config = Object.assign({}, config)
   this.logger = logger
   this.tx = 0
   this.rx = 0
   this.lastStatus = 'Unknown'
   this.IP = ''
+}
+
+module.exports = {
+  SSLocal
 }
